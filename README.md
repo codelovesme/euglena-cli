@@ -38,9 +38,8 @@ euglena code clear
 ### Finding `code`
 
 `euglena run`/`build`/`test` shell out to the `code` interpreter. euglena
-finds it automatically: if you haven't pinned a path, it discovers a Code
-interpreter on your `PATH` — preferring cdlvsm's `cdlvsm-code` shim, then a
-bare `code`. So the usual flow needs no extra setup:
+finds it automatically: if you haven't pinned a path, it uses cdlvsm's
+`cdlvsm-code` shim from your `PATH`. So the usual flow needs no extra setup:
 
 ```bash
 cdlvsm install code
@@ -48,17 +47,17 @@ cdlvsm install euglena
 euglena init app && cd app && euglena run    # just works
 ```
 
-It only accepts a binary that identifies itself as the Code interpreter
-(`code --version` prints `Code v…`), so an unrelated same-named binary like
-VS Code's `code` CLI is never mistakenly invoked.
+It deliberately looks only for `cdlvsm-code`, never a bare `code` — on Linux
+`code` is VS Code's own CLI, and euglena won't risk invoking that.
 
-To pin a specific binary instead — e.g. a local dev build — set it
-explicitly (stored in `~/.config/euglena-cli/code_binary_path`):
+If your `code` came from somewhere other than cdlvsm (a direct `install.sh`,
+a dev build, `cdlvsm install code --link`), point euglena at it explicitly
+(stored in `~/.config/euglena-cli/code_binary_path`):
 
 ```bash
 euglena code set /path/to/your/code
 euglena code show      # what's configured
-euglena code clear     # go back to PATH discovery
+euglena code clear     # go back to cdlvsm-code discovery
 ```
 
 ### App layout

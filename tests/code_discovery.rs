@@ -1,7 +1,7 @@
 //! Tests for how `euglena` locates the `code` interpreter when no path has
-//! been configured via `euglena code set` — it discovers one on PATH,
-//! preferring cdlvsm's `cdlvsm-code` shim and refusing a same-named impostor
-//! like VS Code's `code`.
+//! been configured via `euglena code set` — it discovers cdlvsm's
+//! `cdlvsm-code` shim on PATH, and deliberately never a bare `code` (which on
+//! Linux is VS Code's CLI).
 
 use std::fs;
 use std::os::unix::fs::PermissionsExt;
@@ -128,10 +128,11 @@ fn refuses_a_lone_vscode_impostor_and_errors() {
 }
 
 #[test]
-fn discovers_bare_code_when_it_is_the_real_interpreter() {
-    // A bare `code` that IS the interpreter (e.g. a direct install.sh, or
-    // `cdlvsm install code --link`) is discovered too — the version guard
-    // accepts it because it reports `Code v…`.
+fn does_not_auto_discover_a_bare_code_even_if_it_is_the_real_interpreter() {
+    // Even a bare `code` that IS genuinely the interpreter is NOT auto-picked:
+    // discovery is restricted to `cdlvsm-code` so euglena never has to reason
+    // about whether a PATH `code` is the interpreter or VS Code. A non-cdlvsm
+    // `code` must be pointed at explicitly with `euglena code set`.
     let work = tmp_dir("bare_code");
     let home = work.join("home");
     fs::create_dir_all(&home).unwrap();
@@ -144,10 +145,17 @@ fn discovers_bare_code_when_it_is_the_real_interpreter() {
     minimal_project(&proj);
 
     let (ok, out) = run_euglena_run(&proj, &home, &fakebin);
-    assert!(ok, "euglena run should succeed via bare code; got:\n{out}");
     assert!(
-        out.contains("REAL_CODE_RAN"),
-        "should invoke the real bare code; got:\n{out}"
+        !ok,
+        "bare `code` should not be auto-discovered; got:\n{out}"
+    );
+    assert!(
+        out.contains("no Code interpreter"),
+        "should print the no-interpreter error; got:\n{out}"
+    );
+    assert!(
+        !out.contains("REAL_CODE_RAN"),
+        "must not auto-run a bare `code`; got:\n{out}"
     );
 
     let _ = fs::remove_dir_all(&work);

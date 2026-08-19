@@ -183,46 +183,42 @@ fn find_code_binary_or_exit() -> String {
         return path.to_string_lossy().to_string();
     }
 
-    // 2. Otherwise discover a Code interpreter on PATH, so the common flow
-    //    (`cdlvsm install code && cdlvsm install euglena`) needs no manual
+    // 2. Otherwise discover cdlvsm's `cdlvsm-code` shim on PATH, so the common
+    //    flow (`cdlvsm install code && cdlvsm install euglena`) needs no manual
     //    wiring — both land in a PATH dir like ~/.local/bin.
-    if let Some(found) = discover_code_on_path() {
+    if let Some(found) = discover_cdlvsm_code_on_path() {
         return found;
     }
 
     eprintln!("euglena: no Code interpreter found.");
-    eprintln!("Install one so `cdlvsm-code` or `code` is on your PATH:");
+    eprintln!("Install one via cdlvsm so `cdlvsm-code` is on your PATH:");
     eprintln!("  cdlvsm install code");
-    eprintln!("or point euglena at a specific binary:");
+    eprintln!("or point euglena at a specific `code` binary:");
     eprintln!("  euglena code set /absolute/path/to/code");
     process::exit(1);
 }
 
-/// Search PATH for a Code interpreter. Prefers cdlvsm's `cdlvsm-code` shim,
-/// then a bare `code` — but only accepts a candidate whose `--version`
-/// identifies it as the Code interpreter (`Code vX.Y.Z`). That guard is what
-/// keeps euglena from ever invoking an unrelated same-named binary such as VS
-/// Code's `code` CLI, which shares the `code` name on Linux.
-fn discover_code_on_path() -> Option<String> {
+/// Search PATH for cdlvsm's `cdlvsm-code` shim — and ONLY that name.
+///
+/// Deliberately NOT a bare `code`: on Linux `code` is VS Code's own CLI, and
+/// euglena must never risk invoking (or even running `--version` on) that. A
+/// `code` binary installed some other way is supported via an explicit
+/// `euglena code set`. The `--version` check below is a final guard that the
+/// shim really resolves to the Code interpreter.
+fn discover_cdlvsm_code_on_path() -> Option<String> {
     let path_var = std::env::var_os("PATH")?;
-    // Name preference dominates PATH order: check every dir for `cdlvsm-code`
-    // before considering any `code`, so a stray `code` earlier on PATH never
-    // shadows the unambiguous cdlvsm shim.
-    for name in ["cdlvsm-code", "code"] {
-        for dir in std::env::split_paths(&path_var) {
-            let candidate = dir.join(name);
-            if is_code_interpreter(&candidate) {
-                return Some(candidate.to_string_lossy().to_string());
-            }
+    for dir in std::env::split_paths(&path_var) {
+        let candidate = dir.join("cdlvsm-code");
+        if is_code_interpreter(&candidate) {
+            return Some(candidate.to_string_lossy().to_string());
         }
     }
     None
 }
 
-/// True if `path` runs and reports itself as the Code interpreter. Running
-/// `--version` and checking the `Code v` prefix is what distinguishes the real
-/// interpreter from a same-named impostor (e.g. VS Code's `code`, whose
-/// `--version` prints a bare number like `1.99.0`).
+/// True if `path` runs and reports itself as the Code interpreter (`Code v…`).
+/// A guard against a broken/dangling shim resolving to something that isn't
+/// the interpreter.
 fn is_code_interpreter(path: &Path) -> bool {
     if !path.is_file() {
         return false;
