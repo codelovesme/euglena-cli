@@ -20,11 +20,12 @@ fn tmp_dir(tag: &str) -> PathBuf {
     dir
 }
 
-/// `euglena init` scaffolds a project whose nucleus gene uses the `∈` field
-/// operator, not the `:` colon form that `code` rejects. This is the exact
-/// regression that made `euglena init` → `euglena run` fail (see T2).
+/// `euglena init` scaffolds a project whose nucleus gene uses current Code
+/// particle-schema syntax (`Particle ∩ { _class ∈ "…", … }`), not the removed
+/// `type` keyword. Getting this wrong is what made `euglena init` →
+/// `euglena run` fail (see T2, T3).
 #[test]
-fn scaffolded_nucleus_uses_member_operator_not_colon() {
+fn scaffolded_nucleus_uses_current_particle_syntax() {
     let work = tmp_dir("nucleus_syntax");
     let status = Command::new(bin())
         .args(["init", "demo"])
@@ -35,15 +36,20 @@ fn scaffolded_nucleus_uses_member_operator_not_colon() {
 
     let gene = fs::read_to_string(work.join("demo/src/nucleus.gene.code")).unwrap();
 
-    // The field type must use `∈`, and must NOT use the colon form `code`
-    // rejects with a parse error.
+    // Must build the type from the `Particle` base via `∩`, pinning `_class`,
+    // with the field typed via `∈`.
+    assert!(
+        gene.contains("Particle ∩ {") && gene.contains("_class ∈ \"EuglenaHasBeenBorn\""),
+        "nucleus gene should use `Particle ∩ {{ _class ∈ … }}`; got:\n{gene}"
+    );
     assert!(
         gene.contains("cell_name ∈ String"),
         "nucleus gene should declare the field with `∈`; got:\n{gene}"
     );
+    // Must NOT use the removed `type` keyword or the colon field form.
     assert!(
-        !gene.contains("cell_name:String") && !gene.contains("cell_name: String"),
-        "nucleus gene must not use the colon field form `code` rejects; got:\n{gene}"
+        !gene.contains("type EuglenaHasBeenBorn") && !gene.contains("cell_name:String"),
+        "nucleus gene must not use the removed `type` keyword or colon field; got:\n{gene}"
     );
 
     let _ = fs::remove_dir_all(&work);
