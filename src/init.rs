@@ -68,7 +68,7 @@ fn nucleus_gene_template() -> &'static str {
 -> This gene is auto-linked by euglena-cli because it ends in `.gene.code`.
 -> Delete or rename to `.code` if you do not want it auto-included.
 
-type EuglenaHasBeenBorn { cell_name:String }
+type EuglenaHasBeenBorn { cell_name ∈ String }
 
 booted = false
 

@@ -51,18 +51,16 @@ depending only on `clap` + `serde_json`. Binary name: `euglena`.
 
 ## Known follow-ups (not blocking)
 
-- **`euglena init`'s nucleus template uses the `type` keyword**, which the
-  `code` language removed in its T30. **Verified against the live release:
-  `code` v0.3.0's interpreter rejects the template's
-  `type EuglenaHasBeenBorn { cell_name:String }` line outright** (parse
-  error at `type`), so a freshly `euglena init`'d app does NOT currently
-  run via `euglena run` — it needs the template rewritten to current Code
-  syntax (`EuglenaHasBeenBorn = Particle ∩ { cell_name ∈ String }`). This
-  is a real known limitation, not a future-only concern; left unfixed here
-  to keep the extraction a faithful move (the template came over verbatim),
-  tracked as the first real follow-up for this repo. (An earlier note here
-  claimed v0.3.0 predated the removal and would accept the template — that
-  was wrong; the shipped v0.3.0 binary rejects it.)
+- **`euglena init`'s nucleus template had a broken field syntax** — it
+  declared the type field with a colon (`cell_name:String`), which `code`
+  v0.3.0 rejects with a parse error, so a freshly `euglena init`'d app did
+  NOT run via `euglena run`. **Fixed in T2**: the correct v0.3.0 field
+  syntax is the `∈` operator (`type EuglenaHasBeenBorn { cell_name ∈ String }`,
+  matching `code`'s own `tests/euglena/` fixture at the v0.3.0 tag), not a
+  colon and not (as two earlier drafts of this note wrongly guessed) a
+  `type`-keyword removal or a `Particle ∩ {...}` rewrite — v0.3.0 predates
+  all of that and still uses `type`. Verified end-to-end (`init` → `run`
+  exits 0 against the real released `code`) and guarded by a scaffold test.
 - **euglena has no auto-discovery of `code` on `PATH`** — it strictly
   requires `euglena code set <path>`. A future convenience would be to fall
   back to `cdlvsm-code`/`code` on `PATH` when unconfigured, so `cdlvsm
