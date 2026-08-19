@@ -35,17 +35,31 @@ euglena code show
 euglena code clear
 ```
 
-### Pointing euglena at `code`
+### Finding `code`
 
-`euglena run`/`build`/`test` shell out to the `code` interpreter. Tell euglena
-where it is once:
+`euglena run`/`build`/`test` shell out to the `code` interpreter. euglena
+finds it automatically: if you haven't pinned a path, it discovers a Code
+interpreter on your `PATH` — preferring cdlvsm's `cdlvsm-code` shim, then a
+bare `code`. So the usual flow needs no extra setup:
 
 ```bash
-euglena code set ~/.local/bin/cdlvsm-code   # if installed via cdlvsm
-# or any absolute path to a `code` binary
+cdlvsm install code
+cdlvsm install euglena
+euglena init app && cd app && euglena run    # just works
 ```
 
-The path is stored in `~/.config/euglena-cli/code_binary_path`.
+It only accepts a binary that identifies itself as the Code interpreter
+(`code --version` prints `Code v…`), so an unrelated same-named binary like
+VS Code's `code` CLI is never mistakenly invoked.
+
+To pin a specific binary instead — e.g. a local dev build — set it
+explicitly (stored in `~/.config/euglena-cli/code_binary_path`):
+
+```bash
+euglena code set /path/to/your/code
+euglena code show      # what's configured
+euglena code clear     # go back to PATH discovery
+```
 
 ### App layout
 

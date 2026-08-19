@@ -38,8 +38,7 @@ pub fn run(name: &str) {
     println!();
     println!("Next steps:");
     println!("  cd {}", name);
-    println!("  euglena code set /absolute/path/to/code");
-    println!("  euglena run");
+    println!("  euglena run   (needs a `code` interpreter on PATH — e.g. `cdlvsm install code`)");
     println!();
     println!("Add more genes as src/*.gene.code — euglena-cli links them automatically.");
     println!("Shared organelles are resolved from ../euglena-organelles and parent folders.");

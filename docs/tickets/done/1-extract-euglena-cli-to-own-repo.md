@@ -61,8 +61,7 @@ depending only on `clap` + `serde_json`. Binary name: `euglena`.
   `type`-keyword removal or a `Particle ∩ {...}` rewrite — v0.3.0 predates
   all of that and still uses `type`. Verified end-to-end (`init` → `run`
   exits 0 against the real released `code`) and guarded by a scaffold test.
-- **euglena has no auto-discovery of `code` on `PATH`** — it strictly
-  requires `euglena code set <path>`. A future convenience would be to fall
-  back to `cdlvsm-code`/`code` on `PATH` when unconfigured, so `cdlvsm
-  install euglena && cdlvsm install code` needs no manual wiring. Out of
-  scope for the extraction.
+- ~~**euglena has no auto-discovery of `code` on `PATH`**~~ — **done in T4**:
+  euglena now discovers `cdlvsm-code`/`code` on PATH when unconfigured
+  (with a `--version` guard against same-named impostors), so `cdlvsm install
+  code && cdlvsm install euglena` needs no manual `euglena code set`.

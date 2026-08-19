@@ -48,8 +48,9 @@ pub fn show_code_binary_path() {
             println!("  {}", path.display());
         }
         None => {
-            println!("No Code interpreter configured.");
-            println!("Set it with:");
+            println!("No Code interpreter configured — euglena will discover one on PATH");
+            println!("(`cdlvsm-code`, then `code`) when you run an app.");
+            println!("To pin a specific binary (e.g. a dev build), set it explicitly:");
             println!("  euglena code set /absolute/path/to/code");
         }
     }
