@@ -69,7 +69,10 @@ pub fn run_code(command: &str, file: Option<&str>, release: bool) {
         cleanup_generated_entry(&generated_entry);
         eprintln!("euglena: failed to run '{}': {}", binary, e);
         eprintln!("If this path is wrong, update it with:");
-        eprintln!("  euglena code set /absolute/path/to/code");
+        eprintln!(
+            "  {} code set /absolute/path/to/code",
+            crate::invocation::command_prefix()
+        );
         process::exit(1);
     });
 
@@ -194,7 +197,10 @@ fn find_code_binary_or_exit() -> String {
     eprintln!("Install one via cdlvsm so `cdlvsm-code` is on your PATH:");
     eprintln!("  cdlvsm install code");
     eprintln!("or point euglena at a specific `code` binary:");
-    eprintln!("  euglena code set /absolute/path/to/code");
+    eprintln!(
+        "  {} code set /absolute/path/to/code",
+        crate::invocation::command_prefix()
+    );
     process::exit(1);
 }
 

@@ -1,6 +1,8 @@
 use std::fs;
 use std::path::Path;
 
+use crate::invocation::command_prefix;
+
 /// Scaffold a new Euglena project in a directory named `name`.
 pub fn run(name: &str) {
     let project = Path::new(name);
@@ -36,9 +38,10 @@ pub fn run(name: &str) {
         name
     );
     println!();
+    let cmd = command_prefix();
     println!("Next steps:");
     println!("  cd {}", name);
-    println!("  euglena run   (needs a `code` interpreter on PATH — e.g. `cdlvsm install code`)");
+    println!("  {cmd} run   (needs a `code` interpreter on PATH — e.g. `cdlvsm install code`)");
     println!();
     println!("Add more genes as src/*.gene.code — euglena-cli links them automatically.");
     println!("Shared organelles are resolved from ../euglena-organelles and parent folders.");

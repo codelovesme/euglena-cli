@@ -4,6 +4,7 @@ mod codegen;
 mod config;
 mod exec;
 mod init;
+mod invocation;
 mod manifest;
 
 #[derive(Parser)]

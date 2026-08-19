@@ -15,37 +15,45 @@ cdlvsm install euglena
 cdlvsm install code      # euglena runs apps through the code interpreter
 ```
 
-Or install directly from a release:
+This gives you `cdlvsm euglena <command>` (dispatched through `cdlvsm`) — by
+design there's **no bare `euglena` command** unless you pass `--link`:
+
+```bash
+cdlvsm install euglena --link   # also get a bare `euglena` on PATH
+```
+
+Or install directly from a release, which does put a bare `euglena` on PATH:
 
 ```bash
 curl -sSf https://raw.githubusercontent.com/codelovesme/euglena-cli/main/install.sh | sh
 ```
 
-Linux x86_64 only, for now.
+Linux x86_64 only, for now. Examples below use `cdlvsm euglena` — drop the
+`cdlvsm ` prefix if you installed with `--link` or `install.sh`.
 
 ## Usage
 
 ```
-euglena init <name>          scaffold a new app in ./<name>
-euglena run [file]           run the app (default entry: src/main.code)
-euglena build [file] [--release]   compile the app to a native binary
-euglena test                 run the app's tests/ suite
-euglena code set <path>      point euglena at your `code` interpreter binary
-euglena code show
-euglena code clear
+cdlvsm euglena init <name>          scaffold a new app in ./<name>
+cdlvsm euglena run [file]           run the app (default entry: src/main.code)
+cdlvsm euglena build [file] [--release]   compile the app to a native binary
+cdlvsm euglena test                 run the app's tests/ suite
+cdlvsm euglena code set <path>      point euglena at a specific `code` binary
+cdlvsm euglena code show
+cdlvsm euglena code clear
+```
+
+```bash
+cdlvsm euglena init app
+cd app
+cdlvsm euglena run    # just works — no code-path setup needed, see below
 ```
 
 ### Finding `code`
 
-`euglena run`/`build`/`test` shell out to the `code` interpreter. euglena
-finds it automatically: if you haven't pinned a path, it uses cdlvsm's
-`cdlvsm-code` shim from your `PATH`. So the usual flow needs no extra setup:
-
-```bash
-cdlvsm install code
-cdlvsm install euglena
-euglena init app && cd app && euglena run    # just works
-```
+`run`/`build`/`test` shell out to the `code` interpreter. euglena finds it
+automatically: if you haven't pinned a path, it uses cdlvsm's `cdlvsm-code`
+shim from your `PATH` — no extra setup needed after `cdlvsm install code`.
 
 It deliberately looks only for `cdlvsm-code`, never a bare `code` — on Linux
 `code` is VS Code's own CLI, and euglena won't risk invoking that.
@@ -55,9 +63,9 @@ a dev build, `cdlvsm install code --link`), point euglena at it explicitly
 (stored in `~/.config/euglena-cli/code_binary_path`):
 
 ```bash
-euglena code set /path/to/your/code
-euglena code show      # what's configured
-euglena code clear     # go back to cdlvsm-code discovery
+cdlvsm euglena code set /path/to/your/code
+cdlvsm euglena code show      # what's configured
+cdlvsm euglena code clear     # go back to cdlvsm-code discovery
 ```
 
 ### App layout

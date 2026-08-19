@@ -1,6 +1,8 @@
 use std::fs;
 use std::path::{Path, PathBuf};
 
+use crate::invocation::command_prefix;
+
 const APP_DIR: &str = ".config/euglena-cli";
 const CODE_PATH_FILE: &str = "code_binary_path";
 
@@ -51,7 +53,7 @@ pub fn show_code_binary_path() {
             println!("No Code interpreter configured — euglena will use `cdlvsm-code`");
             println!("from your PATH when you run an app.");
             println!("To use a `code` binary not installed via cdlvsm, set it explicitly:");
-            println!("  euglena code set /absolute/path/to/code");
+            println!("  {} code set /absolute/path/to/code", command_prefix());
         }
     }
 }
